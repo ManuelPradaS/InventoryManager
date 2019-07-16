@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +29,11 @@ public class InventoryManagerServiceImpl implements InventoryManagerService {
     @Override
     public ResponseEntity<String> addProduct(Product newProduct) {
         String responseMessage;
+        if (newProduct.getName() == null || newProduct.getSupplier() == null || newProduct.getReference() == 0) {
+            responseMessage = "All the fields must be filled";
+            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+
+        }
         try {
             productsRepository.save(newProduct);
             responseMessage = "Your product has been saved";
@@ -76,7 +80,7 @@ public class InventoryManagerServiceImpl implements InventoryManagerService {
 
         try {
             productsRepository.deleteById(productId);
-            responseMessage ="The product with id " + productId + " has been deleted";
+            responseMessage = "The product with id " + productId + " has been deleted";
             return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 
         } catch (RuntimeException e) {
