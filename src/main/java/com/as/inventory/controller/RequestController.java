@@ -33,5 +33,10 @@ public class RequestController {
         return inventoryManagerService.getProducts(name, reference, supplier, productId);
     }
 
+    @RequestMapping(path = "/products", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteProduct(@RequestParam(value = "id") int productId) {
+        return inventoryManagerService.deleteProduct(productId);
+
+    }
 
 }
