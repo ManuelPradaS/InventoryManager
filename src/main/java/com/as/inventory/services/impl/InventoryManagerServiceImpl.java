@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,7 +44,7 @@ public class InventoryManagerServiceImpl implements InventoryManagerService {
     }
 
     @Override
-    public ResponseEntity<ProductArray> getProducts(String name,Integer reference,String supplier,Integer productId) {
+    public ResponseEntity<ProductArray> getProducts(String name, Integer reference, String supplier, Integer productId) {
 
         List<Predicate<Product>> filters = new ArrayList<>();
 
@@ -51,13 +52,13 @@ public class InventoryManagerServiceImpl implements InventoryManagerService {
             filters.add(product -> product.getName().equals(name));
         }
         if (reference != null) {
-            filters.add(product -> product.getReference()==reference);
+            filters.add(product -> product.getReference() == reference);
         }
         if (supplier != null) {
             filters.add(product -> product.getSupplier().equals(supplier));
         }
         if (productId != null) {
-            filters.add(product -> product.getProductId()==productId);
+            filters.add(product -> product.getProductId() == productId);
         }
 
         List<Product> allProducts = productsRepository.findAll();
@@ -69,4 +70,19 @@ public class InventoryManagerServiceImpl implements InventoryManagerService {
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<String> deleteProduct(Integer productId) {
+        String responseMessage;
+
+        try {
+            productsRepository.deleteById(productId);
+            responseMessage ="The product with id " + productId + " has been deleted";
+            return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+
+        } catch (RuntimeException e) {
+            responseMessage = "The product with id " + productId + " does not exist";
+            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+
+        }
+    }
 }

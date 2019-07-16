@@ -7,4 +7,5 @@ import java.util.List;
 public interface ProductsRepository extends CrudRepository<Product,Integer>  {
     @Override
     List<Product> findAll();
+    void deleteById(int productId);
 }
